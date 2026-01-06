@@ -762,8 +762,8 @@ export class Game {
         direction.normalize();
 
         // Calculate angle for arrow rotation (in degrees)
-        // Negative because CSS rotates clockwise but we want the arrow to point correctly
-        const angle = -Math.atan2(direction.x, direction.z) * 180 / Math.PI;
+        // Add 180 to flip the direction to point toward destination
+        const angle = -Math.atan2(direction.x, direction.z) * 180 / Math.PI + 180;
 
         // Update distance display (convert to whole number)
         const distanceLabel = arrow.querySelector('.compass-distance');
@@ -836,6 +836,8 @@ export class Game {
                 // Position warning at edge of screen with better mobile spacing
                 const isMobile = window.innerWidth <= 768;
                 const edgeDistance = isMobile ? 50 : 35; // More padding on mobile
+                const leftOffset = 90; // Extra offset from left to avoid HUD/compass
+                const topOffset = 50; // Extra offset from top to avoid HUD
                 const centerX = window.innerWidth / 2;
                 const centerY = window.innerHeight / 2;
 
@@ -846,28 +848,32 @@ export class Game {
                 if (Math.abs(direction.x) > Math.abs(direction.z)) {
                     // Horizontal edge (left or right)
                     if (direction.x > 0) {
+                        // Right edge - strictly at the edge
                         warningX = window.innerWidth - edgeDistance;
                         edgeClass = 'edge-right';
                     } else {
-                        warningX = edgeDistance + 80; // Offset from left to avoid compass
+                        // Left edge - offset to avoid HUD
+                        warningX = edgeDistance + leftOffset;
                         edgeClass = 'edge-left';
                     }
-                    warningY = centerY - (direction.z * (centerY - edgeDistance * 2));
+                    // Position Y along the edge based on Z direction
+                    warningY = centerY - (direction.z * (centerY - edgeDistance - topOffset));
+                    warningY = Math.max(edgeDistance + topOffset, Math.min(window.innerHeight - edgeDistance, warningY));
                 } else {
                     // Vertical edge (top or bottom)
                     if (direction.z > 0) {
+                        // Bottom edge - strictly at the edge
                         warningY = window.innerHeight - edgeDistance;
                         edgeClass = 'edge-bottom';
                     } else {
-                        warningY = edgeDistance + 40; // Offset from top
+                        // Top edge - offset to avoid HUD
+                        warningY = edgeDistance + topOffset;
                         edgeClass = 'edge-top';
                     }
-                    warningX = centerX + (direction.x * (centerX - edgeDistance * 2));
+                    // Position X along the edge based on X direction
+                    warningX = centerX + (direction.x * (centerX - edgeDistance - leftOffset));
+                    warningX = Math.max(edgeDistance + leftOffset, Math.min(window.innerWidth - edgeDistance, warningX));
                 }
-
-                // Clamp to screen bounds
-                warningX = Math.max(edgeDistance, Math.min(window.innerWidth - edgeDistance, warningX));
-                warningY = Math.max(edgeDistance, Math.min(window.innerHeight - edgeDistance, warningY));
 
                 warning.classList.add(edgeClass);
                 warning.style.left = warningX + 'px';
