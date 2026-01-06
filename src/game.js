@@ -721,72 +721,44 @@ export class Game {
     
     updateDestinationArrow() {
         if (!this.trackData || !this.ship) return;
-        
+
         const arrow = document.getElementById('destination-arrow');
         if (!arrow) return;
-        
+
         // Get end point - ensure it's a Vector3
         let endPoint = this.trackData.endPoint;
         if (!endPoint) return;
-        
+
         // Convert to Vector3 if it's not already
         if (!(endPoint instanceof THREE.Vector3)) {
             endPoint = new THREE.Vector3(endPoint.x, endPoint.y, endPoint.z);
         }
-        
-        // Project end point to screen coordinates
-        const vector = endPoint.clone().project(this.camera);
-        
-        // Check if end point is visible on screen (within viewport)
-        const isVisible = vector.z > 0 && 
-                         vector.x >= -1 && vector.x <= 1 && 
-                         vector.y >= -1 && vector.y <= 1;
-        
-        if (isVisible) {
-            arrow.style.display = 'none';
-        } else {
-            arrow.style.display = 'block';
-            
-            // Calculate direction from ship to destination
-            const shipPos = this.ship.position;
-            const direction = new THREE.Vector3(
-                endPoint.x - shipPos.x,
-                0,
-                endPoint.z - shipPos.z
-            ).normalize();
-            
-            // Calculate angle for arrow rotation (in degrees)
-            const angle = Math.atan2(direction.x, direction.z) * 180 / Math.PI;
-            
-            // Position arrow at edge of screen pointing toward destination
-            const edgeDistance = 60;
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
 
-            // Calculate which edge the arrow should be on
-            let arrowX, arrowY;
+        // Calculate direction from ship to destination
+        const shipPos = this.ship.position;
+        const direction = new THREE.Vector3(
+            endPoint.x - shipPos.x,
+            0,
+            endPoint.z - shipPos.z
+        );
 
-            // Determine which edge based on direction
-            if (Math.abs(direction.x) > Math.abs(direction.z)) {
-                // Horizontal edge (left or right)
-                arrowX = direction.x > 0 ? window.innerWidth - edgeDistance : edgeDistance;
-                // Position vertically based on z direction
-                arrowY = centerY - (direction.z * (centerY - edgeDistance));
-            } else {
-                // Vertical edge (top or bottom)
-                arrowY = direction.z > 0 ? window.innerHeight - edgeDistance : edgeDistance;
-                // Position horizontally based on x direction
-                arrowX = centerX + (direction.x * (centerX - edgeDistance));
-            }
+        const distance = direction.length();
+        direction.normalize();
 
-            // Clamp to screen bounds
-            arrowX = Math.max(edgeDistance, Math.min(window.innerWidth - edgeDistance, arrowX));
-            arrowY = Math.max(edgeDistance, Math.min(window.innerHeight - edgeDistance, arrowY));
+        // Calculate angle for arrow rotation (in degrees)
+        const angle = Math.atan2(direction.x, direction.z) * 180 / Math.PI;
 
-            arrow.style.left = (arrowX - 40) + 'px'; // Center the arrow (80px wide)
-            arrow.style.top = (arrowY - 40) + 'px'; // Center the arrow (80px tall)
-            arrow.style.transform = `rotate(${angle}deg)`;
-        }
+        // Update distance display (convert to whole number)
+        arrow.setAttribute('data-distance', Math.round(distance));
+
+        // Position compass at top center of screen
+        const compassX = window.innerWidth / 2 - 35; // Center horizontally (70px wide / 2)
+        const compassY = 15; // Fixed distance from top
+
+        arrow.style.left = compassX + 'px';
+        arrow.style.top = compassY + 'px';
+        arrow.style.transform = `rotate(${angle}deg)`;
+        arrow.classList.add('show');
     }
 
     updateAsteroidWarnings() {
@@ -796,7 +768,7 @@ export class Game {
         }
 
         const warningsContainer = document.getElementById('asteroid-warnings');
-        const warningThreshold = 60; // Distance threshold in game units to show warning
+        const warningThreshold = 45; // Reduced threshold for less aggressive warnings
         const nearbyAsteroids = [];
 
         // Find asteroids that are nearby but off-screen
@@ -826,10 +798,10 @@ export class Game {
         // Clear existing warnings
         warningsContainer.innerHTML = '';
 
-        // Create warning indicators for nearby off-screen asteroids (limit to 5 most urgent)
+        // Create warning indicators for nearby off-screen asteroids (limit to 3 most urgent)
         nearbyAsteroids
             .sort((a, b) => a.distance - b.distance) // Sort by distance (closest first)
-            .slice(0, 5) // Only show top 5
+            .slice(0, 3) // Only show top 3 to avoid clutter
             .forEach(({ asteroid }) => {
                 const warning = document.createElement('div');
                 warning.className = 'asteroid-warning';
@@ -842,8 +814,9 @@ export class Game {
                     asteroid.position.z - shipPos.z
                 ).normalize();
 
-                // Position warning at edge of screen
-                const edgeDistance = 30;
+                // Position warning at edge of screen with better mobile spacing
+                const isMobile = window.innerWidth <= 768;
+                const edgeDistance = isMobile ? 50 : 35; // More padding on mobile
                 const centerX = window.innerWidth / 2;
                 const centerY = window.innerHeight / 2;
 
@@ -867,7 +840,7 @@ export class Game {
                         warningY = window.innerHeight - edgeDistance;
                         edgeClass = 'edge-bottom';
                     } else {
-                        warningY = edgeDistance;
+                        warningY = edgeDistance + (isMobile ? 70 : 40); // Avoid compass at top
                         edgeClass = 'edge-top';
                     }
                     warningX = centerX + (direction.x * (centerX - edgeDistance * 2));
@@ -880,8 +853,8 @@ export class Game {
                 warning.classList.add(edgeClass);
                 warning.style.left = warningX + 'px';
                 warning.style.top = warningY + 'px';
-                warning.style.width = '60px';
-                warning.style.height = '60px';
+                warning.style.width = isMobile ? '50px' : '60px';
+                warning.style.height = isMobile ? '50px' : '60px';
 
                 warningsContainer.appendChild(warning);
             });
