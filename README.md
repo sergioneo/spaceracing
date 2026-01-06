@@ -8,6 +8,7 @@ A physics-based asteroid racing game where you navigate from a start point to an
 - **Dynamic Tracks**: Each track is generated from a codeword, creating unique asteroid patterns
 - **3D Graphics**: Simplified 3D graphics using Three.js with top-down view
 - **URL-based Tracks**: Access different tracks via URL parameter (e.g., `/KESSEL`)
+- **Mobile Support**: Full touch controls with on-screen D-pad and buttons
 - **Leaderboards**: Firebase-powered leaderboards split by platform (PC/Mobile) and track name
 
 ## Getting Started
@@ -28,8 +29,20 @@ npm run dev
 
 ## Controls
 
+### PC Controls
 - **Arrow Keys**: Apply thrust in that direction
-- **Space**: Reset the race
+- **Space**: Brake
+- **Enter**: Start countdown
+- **ESC**: Reset the race
+
+### Mobile Controls
+The game includes full touch controls for mobile devices:
+- **D-Pad** (bottom-left): Navigate your ship
+- **BRAKE Button**: Slow down
+- **START Button**: Begin countdown
+- **RESET Button**: Restart the race
+
+Mobile controls automatically appear on touch-enabled devices and adapt to both portrait and landscape orientations.
 
 ## How It Works
 

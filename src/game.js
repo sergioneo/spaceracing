@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import { TrackGenerator } from './trackGenerator.js';
 import { LeaderboardUI } from './leaderboardUI.js';
+import { MobileControls } from './mobileControls.js';
 
 export class Game {
     constructor(container, trackName) {
         this.container = container;
         this.trackName = trackName;
         this.leaderboardUI = new LeaderboardUI(trackName);
+        this.mobileControls = null; // Will be initialized after game setup
         this.scene = null;
         this.camera = null;
         this.renderer = null;
@@ -106,6 +108,9 @@ export class Game {
 
         // Event listeners
         this.setupEventListeners();
+
+        // Initialize mobile controls
+        this.mobileControls = new MobileControls(this);
 
         // Update UI
         document.getElementById('track-name').textContent = this.trackName;
