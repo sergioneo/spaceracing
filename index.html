@@ -27,17 +27,41 @@
             top: 20px;
             left: 20px;
             z-index: 100;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(0, 40, 40, 0.85) 0%, rgba(0, 20, 20, 0.95) 100%);
+            padding: 12px 16px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow:
+                0 0 20px rgba(0, 255, 255, 0.2),
+                inset 0 0 20px rgba(0, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 180px;
         }
-        #ui h2 {
-            margin-bottom: 10px;
-            color: #0ff;
+        .hud-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.15);
         }
-        #ui p {
-            margin: 5px 0;
+        .hud-item:last-child {
+            border-bottom: none;
+        }
+        .hud-label {
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: rgba(0, 255, 255, 0.6);
+            text-transform: uppercase;
+        }
+        .hud-value {
             font-size: 14px;
+            font-weight: bold;
+            color: #0ff;
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+            font-family: 'Courier New', monospace;
         }
         #controls {
             position: absolute;
@@ -57,7 +81,7 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            margin-top: 145px;
+            margin-top: 125px;
             width: 80px;
             height: 80px;
             z-index: 100;
@@ -782,13 +806,28 @@
                 width: 22px;
             }
 
+            /* Compact HUD on mobile */
+            #ui {
+                top: 15px;
+                left: 15px;
+                padding: 10px 12px;
+                min-width: 160px;
+                gap: 6px;
+            }
+            .hud-label {
+                font-size: 9px;
+            }
+            .hud-value {
+                font-size: 12px;
+            }
+
             /* Smaller compass on mobile */
             #destination-arrow {
                 width: 65px;
                 height: 65px;
                 top: 15px;
                 left: 15px;
-                margin-top: 130px;
+                margin-top: 115px;
             }
             .compass-needle::before {
                 top: 6px;
@@ -852,6 +891,26 @@
                 font-size: 11px;
             }
 
+            /* Extra compact HUD on very small screens */
+            #ui {
+                top: 10px;
+                left: 10px;
+                padding: 8px 10px;
+                min-width: 140px;
+                gap: 5px;
+            }
+            .hud-label {
+                font-size: 8px;
+            }
+            .hud-value {
+                font-size: 11px;
+            }
+
+            /* Adjust compass for very small screens */
+            #destination-arrow {
+                margin-top: 105px;
+            }
+
             #mobile-controls {
                 height: 260px;
             }
@@ -881,6 +940,23 @@
 
         /* Landscape mobile adjustments */
         @media (max-width: 896px) and (orientation: landscape) {
+            /* Compact HUD in landscape */
+            #ui {
+                top: 10px;
+                left: 10px;
+                padding: 8px 12px;
+                min-width: 150px;
+            }
+            .hud-label {
+                font-size: 8px;
+            }
+            .hud-value {
+                font-size: 11px;
+            }
+            #destination-arrow {
+                margin-top: 100px;
+            }
+
             #dpad-container {
                 bottom: 15px;
                 left: 10px;
@@ -965,10 +1041,18 @@
     </div>
     <div id="asteroid-warnings"></div>
     <div id="ui">
-        <h2>Space Racing</h2>
-        <p>Track: <span id="track-name">-</span></p>
-        <p>Time: <span id="time">0.00</span>s</p>
-        <p>Status: <span id="status">Ready</span></p>
+        <div class="hud-item">
+            <span class="hud-label">TRACK</span>
+            <span class="hud-value" id="track-name">-</span>
+        </div>
+        <div class="hud-item">
+            <span class="hud-label">TIME</span>
+            <span class="hud-value"><span id="time">0.00</span>s</span>
+        </div>
+        <div class="hud-item">
+            <span class="hud-label">STATUS</span>
+            <span class="hud-value" id="status">Ready</span>
+        </div>
     </div>
 
     <!-- Hamburger Menu Button -->
