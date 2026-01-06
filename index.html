@@ -244,6 +244,209 @@
                 0 0 80px #00ff00,
                 0 0 100px #00ff00;
         }
+
+        /* Score Submission Form */
+        .score-form {
+            margin: 30px 0;
+        }
+        #player-name {
+            width: 300px;
+            padding: 12px 20px;
+            font-size: 18px;
+            border: 2px solid #0ff;
+            background: rgba(0, 20, 40, 0.8);
+            color: #fff;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+        }
+        #player-name:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 10px #0ff;
+        }
+        #submit-score-btn {
+            padding: 12px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #0066ff, #00ccff);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        #submit-score-btn:hover {
+            background: linear-gradient(135deg, #0088ff, #00ddff);
+            box-shadow: 0 0 20px #0ff;
+            transform: scale(1.05);
+        }
+        #submit-score-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+        #submission-status {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #0ff;
+            min-height: 24px;
+        }
+
+        /* Leaderboard Screen */
+        #leaderboard-screen {
+            background: rgba(0, 0, 0, 0.95);
+        }
+        .leaderboard-content {
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: rgba(0, 10, 30, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(0, 200, 255, 0.3);
+        }
+        .leaderboard-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .leaderboard-header h1 {
+            font-size: 48px;
+            color: #0ff;
+            text-shadow: 0 0 20px #0ff;
+            margin-bottom: 10px;
+        }
+        .leaderboard-header p {
+            font-size: 20px;
+            color: #fff;
+        }
+        #close-leaderboard {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 10px 25px;
+            font-size: 16px;
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #close-leaderboard:hover {
+            background: #ff3333;
+            box-shadow: 0 0 15px #ff0000;
+        }
+        .leaderboard-platforms {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .platform-leaderboard h2 {
+            font-size: 32px;
+            color: #00ff00;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        .leaderboard-list {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #0ff;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 400px;
+        }
+        .leaderboard-entry {
+            display: grid;
+            grid-template-columns: 40px 1fr 100px;
+            gap: 15px;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(0, 100, 150, 0.2);
+            border-radius: 5px;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .leaderboard-entry:hover {
+            background: rgba(0, 150, 200, 0.3);
+            transform: translateX(5px);
+        }
+        .leaderboard-entry.top-1 {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+            border-left: 4px solid gold;
+        }
+        .leaderboard-entry.top-2 {
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.3), rgba(192, 192, 192, 0.1));
+            border-left: 4px solid silver;
+        }
+        .leaderboard-entry.top-3 {
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.3), rgba(205, 127, 50, 0.1));
+            border-left: 4px solid #cd7f32;
+        }
+        .entry-rank {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0ff;
+            text-align: center;
+        }
+        .entry-name {
+            font-size: 18px;
+            color: #fff;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .entry-time {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ff00;
+            text-align: right;
+        }
+        .leaderboard-empty {
+            text-align: center;
+            color: #888;
+            font-size: 18px;
+            padding: 40px;
+        }
+
+        /* View Leaderboard Button */
+        #view-leaderboard-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff6600, #ff9900);
+            color: #fff;
+            border: 2px solid #ff6600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        #view-leaderboard-btn:hover {
+            background: linear-gradient(135deg, #ff8800, #ffbb00);
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .leaderboard-platforms {
+                grid-template-columns: 1fr;
+            }
+            .leaderboard-content {
+                padding: 20px;
+            }
+            #player-name {
+                width: 90%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -284,9 +487,38 @@
             <div class="screen-title">VICTORY!</div>
             <div class="screen-message">You completed the course!</div>
             <div class="screen-time" id="win-time">Time: 0.00s</div>
+            <div id="score-submission" class="score-form">
+                <input type="text" id="player-name" placeholder="Enter your name" maxlength="20" />
+                <button id="submit-score-btn">Save Score</button>
+                <div id="submission-status"></div>
+            </div>
             <div class="screen-instruction">Press ESC to race again</div>
         </div>
     </div>
+
+    <!-- Leaderboard Screen -->
+    <div id="leaderboard-screen" class="overlay-screen">
+        <div class="leaderboard-content">
+            <div class="leaderboard-header">
+                <h1>LEADERBOARDS</h1>
+                <p id="leaderboard-track">Track: <span></span></p>
+                <button id="close-leaderboard">Close</button>
+            </div>
+            <div class="leaderboard-platforms">
+                <div class="platform-leaderboard">
+                    <h2>PC</h2>
+                    <div id="pc-leaderboard" class="leaderboard-list"></div>
+                </div>
+                <div class="platform-leaderboard">
+                    <h2>Mobile</h2>
+                    <div id="mobile-leaderboard" class="leaderboard-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Button -->
+    <button id="view-leaderboard-btn">View Leaderboards</button>
 
     <script type="module" src="/src/main.js"></script>
 </body>

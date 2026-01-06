@@ -3,3 +3,7 @@ dist/
 .DS_Store
 *.log
 
+# Note: src/firebaseConfig.js contains a template.
+# After adding your real Firebase credentials, you may want to add:
+# src/firebaseConfig.js
+

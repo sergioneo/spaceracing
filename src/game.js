@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { TrackGenerator } from './trackGenerator.js';
+import { LeaderboardUI } from './leaderboardUI.js';
 
 export class Game {
     constructor(container, trackName) {
         this.container = container;
         this.trackName = trackName;
+        this.leaderboardUI = new LeaderboardUI(trackName);
         this.scene = null;
         this.camera = null;
         this.renderer = null;
@@ -689,10 +691,14 @@ export class Game {
     showWinScreen(time) {
         document.getElementById('win-time').textContent = `Time: ${time}s`;
         document.getElementById('win-screen').classList.add('show');
+
+        // Show score submission form
+        this.leaderboardUI.showScoreSubmission(time);
     }
 
     hideWinScreen() {
         document.getElementById('win-screen').classList.remove('show');
+        this.leaderboardUI.resetScoreSubmission();
     }
 
     updateUI() {
