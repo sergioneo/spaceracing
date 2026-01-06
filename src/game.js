@@ -746,7 +746,8 @@ export class Game {
         direction.normalize();
 
         // Calculate angle for arrow rotation (in degrees)
-        const angle = Math.atan2(direction.x, direction.z) * 180 / Math.PI;
+        // Negative because CSS rotates clockwise but we want the arrow to point correctly
+        const angle = -Math.atan2(direction.x, direction.z) * 180 / Math.PI;
 
         // Update distance display (convert to whole number)
         arrow.setAttribute('data-distance', Math.round(distance));

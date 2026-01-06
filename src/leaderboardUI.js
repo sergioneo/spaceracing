@@ -22,9 +22,8 @@ export class LeaderboardUI {
             }
         });
 
-        // View leaderboard button
-        const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
-        viewLeaderboardBtn.addEventListener('click', () => this.showLeaderboard());
+        // Listen for leaderboard show event from menu
+        document.addEventListener('showLeaderboard', () => this.showLeaderboard());
 
         // Close leaderboard button
         const closeBtn = document.getElementById('close-leaderboard');

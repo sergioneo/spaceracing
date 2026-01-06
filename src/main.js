@@ -30,6 +30,49 @@ const trackName = getTrackNameFromURL();
 // Update controls display
 updateControlsDisplay();
 
+// Menu toggle functionality
+function setupMenuToggle() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const menuPanel = document.getElementById('menu-panel');
+    const menuLeaderboardBtn = document.getElementById('menu-leaderboard-btn');
+
+    // Toggle menu on button click
+    menuToggle.addEventListener('click', () => {
+        menuToggle.classList.toggle('active');
+        menuPanel.classList.toggle('open');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!menuPanel.contains(e.target) && !menuToggle.contains(e.target)) {
+            menuToggle.classList.remove('active');
+            menuPanel.classList.remove('open');
+        }
+    });
+
+    // Handle leaderboard button click
+    menuLeaderboardBtn.addEventListener('click', () => {
+        // Close menu
+        menuToggle.classList.remove('active');
+        menuPanel.classList.remove('open');
+
+        // Trigger leaderboard (will be handled by leaderboardUI)
+        const event = new CustomEvent('showLeaderboard');
+        document.dispatchEvent(event);
+    });
+
+    // Close menu on ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menuPanel.classList.contains('open')) {
+            menuToggle.classList.remove('active');
+            menuPanel.classList.remove('open');
+        }
+    });
+}
+
+// Initialize menu
+setupMenuToggle();
+
 // Initialize game
 const container = document.getElementById('game-container');
 const game = new Game(container, trackName);

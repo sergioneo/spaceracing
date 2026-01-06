@@ -436,13 +436,91 @@
             padding: 40px;
         }
 
-        /* View Leaderboard Button */
-        #view-leaderboard-btn {
+        /* Hamburger Menu Button */
+        #menu-toggle {
             position: absolute;
-            bottom: 20px;
+            top: 20px;
             right: 20px;
-            z-index: 100;
-            padding: 12px 25px;
+            z-index: 1100;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 100, 150, 0.8);
+            border: 2px solid #0ff;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
+        #menu-toggle:hover {
+            background: rgba(0, 150, 200, 0.9);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+        #menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #0ff;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        #menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+        #menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        #menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Menu Panel */
+        #menu-panel {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(0, 10, 30, 0.98);
+            border-left: 2px solid #0ff;
+            z-index: 1050;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+        }
+        #menu-panel.open {
+            right: 0;
+        }
+        #menu-content {
+            padding: 80px 20px 20px 20px;
+        }
+        #menu-content h3 {
+            color: #0ff;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #0ff;
+        }
+        #menu-content h4 {
+            color: #00ff00;
+            font-size: 18px;
+            margin-bottom: 10px;
+            margin-top: 5px;
+        }
+        .menu-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        .menu-section:last-child {
+            border-bottom: none;
+        }
+        .menu-btn {
+            width: 100%;
+            padding: 12px 20px;
             font-size: 16px;
             font-weight: bold;
             background: linear-gradient(135deg, #ff6600, #ff9900);
@@ -453,10 +531,16 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
         }
-        #view-leaderboard-btn:hover {
+        .menu-btn:hover {
             background: linear-gradient(135deg, #ff8800, #ffbb00);
-            box-shadow: 0 0 20px rgba(255, 102, 0, 0.6);
-            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 102, 0, 0.6);
+            transform: translateX(-5px);
+        }
+        #menu-controls p {
+            color: #fff;
+            margin: 8px 0;
+            font-size: 14px;
+            padding-left: 10px;
         }
 
         /* Mobile Controls */
@@ -589,23 +673,15 @@
                 display: block;
             }
 
-            /* Adjust control instructions for mobile */
-            #controls {
-                display: none;
+            /* Adjust menu button for mobile */
+            #menu-toggle {
+                width: 45px;
+                height: 45px;
+                top: 15px;
+                right: 15px;
             }
-
-            /* Move leaderboard button to top on mobile to avoid overlap */
-            #view-leaderboard-btn {
-                bottom: auto;
-                top: 20px;
-                right: 20px;
-                padding: 10px 20px;
-                font-size: 14px;
-            }
-
-            /* Adjust UI panel for mobile */
-            #ui {
-                top: 70px;
+            #menu-toggle span {
+                width: 22px;
             }
 
             /* Smaller indicators on mobile */
@@ -704,11 +780,16 @@
                 font-size: 12px;
             }
 
-            #view-leaderboard-btn {
+            #menu-toggle {
+                width: 40px;
+                height: 40px;
                 top: 10px;
                 right: 10px;
-                padding: 8px 15px;
-                font-size: 12px;
+                gap: 4px;
+            }
+            #menu-toggle span {
+                width: 20px;
+                height: 2px;
             }
         }
     </style>
@@ -723,12 +804,33 @@
         <p>Time: <span id="time">0.00</span>s</p>
         <p>Status: <span id="status">Ready</span></p>
     </div>
-    <div id="controls">
-        <p><strong>Controls:</strong></p>
-        <p id="control-start">Enter: Start countdown</p>
-        <p id="control-arrows">Arrow Keys: Apply thrust</p>
-        <p id="control-brake">Space: Brake</p>
-        <p id="control-reset">ESC: Reset race</p>
+
+    <!-- Hamburger Menu Button -->
+    <button id="menu-toggle" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Slide-out Menu -->
+    <div id="menu-panel">
+        <div id="menu-content">
+            <h3>Menu</h3>
+
+            <div class="menu-section">
+                <button id="menu-leaderboard-btn" class="menu-btn">View Leaderboards</button>
+            </div>
+
+            <div class="menu-section">
+                <h4>Controls</h4>
+                <div id="menu-controls">
+                    <p id="control-start">Enter: Start countdown</p>
+                    <p id="control-arrows">Arrow Keys: Apply thrust</p>
+                    <p id="control-brake">Space: Brake</p>
+                    <p id="control-reset">ESC: Reset race</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Mobile Controls -->
@@ -801,9 +903,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Leaderboard Button -->
-    <button id="view-leaderboard-btn">View Leaderboards</button>
 
     <script type="module" src="/src/main.js"></script>
 </body>
