@@ -752,12 +752,7 @@ export class Game {
         // Update distance display (convert to whole number)
         arrow.setAttribute('data-distance', Math.round(distance));
 
-        // Position compass at top center of screen
-        const compassX = window.innerWidth / 2 - 35; // Center horizontally (70px wide / 2)
-        const compassY = 15; // Fixed distance from top
-
-        arrow.style.left = compassX + 'px';
-        arrow.style.top = compassY + 'px';
+        // Only update rotation - position is fixed via CSS next to UI
         arrow.style.transform = `rotate(${angle}deg)`;
         arrow.classList.add('show');
     }
@@ -831,7 +826,7 @@ export class Game {
                         warningX = window.innerWidth - edgeDistance;
                         edgeClass = 'edge-right';
                     } else {
-                        warningX = edgeDistance;
+                        warningX = edgeDistance + 80; // Offset from left to avoid compass
                         edgeClass = 'edge-left';
                     }
                     warningY = centerY - (direction.z * (centerY - edgeDistance * 2));
@@ -841,7 +836,7 @@ export class Game {
                         warningY = window.innerHeight - edgeDistance;
                         edgeClass = 'edge-bottom';
                     } else {
-                        warningY = edgeDistance + (isMobile ? 70 : 40); // Avoid compass at top
+                        warningY = edgeDistance + 40; // Offset from top
                         edgeClass = 'edge-top';
                     }
                     warningX = centerX + (direction.x * (centerX - edgeDistance * 2));

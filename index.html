@@ -52,9 +52,12 @@
             margin: 5px 0;
             font-size: 12px;
         }
-        /* Destination Compass */
+        /* Destination Compass - positioned with UI */
         #destination-arrow {
             position: absolute;
+            top: 20px;
+            left: 20px;
+            margin-top: 145px;
             width: 70px;
             height: 70px;
             z-index: 100;
@@ -188,6 +191,7 @@
             border-radius: 20px;
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
             animation: pulse 2s ease-in-out infinite;
+            max-width: 90%;
         }
         .screen-title {
             font-size: 72px;
@@ -195,6 +199,46 @@
             margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 8px;
+        }
+
+        /* Mobile-friendly screens */
+        @media (max-width: 768px) {
+            .screen-content {
+                padding: 30px 20px;
+                max-width: 85%;
+            }
+            .screen-title {
+                font-size: 36px;
+                letter-spacing: 4px;
+                margin-bottom: 15px;
+            }
+            .screen-message {
+                font-size: 16px;
+                margin-bottom: 20px;
+            }
+            .screen-time {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            .screen-instruction {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .screen-content {
+                padding: 25px 15px;
+            }
+            .screen-title {
+                font-size: 28px;
+                letter-spacing: 2px;
+            }
+            .screen-message {
+                font-size: 14px;
+            }
+            .screen-time {
+                font-size: 20px;
+            }
         }
         #crash-screen .screen-title {
             color: #ff0000;
@@ -689,6 +733,9 @@
                 width: 55px;
                 height: 55px;
                 border-width: 2px;
+                top: 15px;
+                left: 15px;
+                margin-top: 130px;
             }
             #destination-arrow::before {
                 font-size: 22px;
@@ -735,6 +782,20 @@
 
             #mobile-controls {
                 height: 260px;
+            }
+
+            #destination-arrow {
+                width: 50px;
+                height: 50px;
+                margin-top: 120px;
+                top: 10px;
+                left: 10px;
+            }
+            #destination-arrow::before {
+                font-size: 20px;
+            }
+            #destination-arrow::after {
+                font-size: 8px;
             }
         }
 
@@ -790,6 +851,20 @@
             #menu-toggle span {
                 width: 20px;
                 height: 2px;
+            }
+
+            #destination-arrow {
+                width: 45px;
+                height: 45px;
+                margin-top: 105px;
+                top: 10px;
+                left: 10px;
+            }
+            #destination-arrow::before {
+                font-size: 18px;
+            }
+            #destination-arrow::after {
+                font-size: 7px;
             }
         }
     </style>
