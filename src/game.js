@@ -675,6 +675,14 @@ export class Game {
     showCrashScreen() {
         this.isRunning = false;
         this.isFinished = true;
+
+        // Update instruction based on platform
+        const isMobile = window.innerWidth <= 768;
+        const crashInstruction = document.querySelector('#crash-screen .screen-instruction');
+        if (crashInstruction) {
+            crashInstruction.textContent = isMobile ? 'Tap RESET to try again' : 'Press ESC to try again';
+        }
+
         document.getElementById('crash-screen').classList.add('show');
         document.getElementById('status').textContent = 'Crashed!';
     }
@@ -695,6 +703,14 @@ export class Game {
 
     showWinScreen(time) {
         document.getElementById('win-time').textContent = `Time: ${time}s`;
+
+        // Update instruction based on platform
+        const isMobile = window.innerWidth <= 768;
+        const winInstruction = document.querySelector('#win-screen .screen-instruction');
+        if (winInstruction) {
+            winInstruction.textContent = isMobile ? 'Tap RESET to race again' : 'Press ESC to race again';
+        }
+
         document.getElementById('win-screen').classList.add('show');
 
         // Show score submission form
@@ -750,10 +766,17 @@ export class Game {
         const angle = -Math.atan2(direction.x, direction.z) * 180 / Math.PI;
 
         // Update distance display (convert to whole number)
-        arrow.setAttribute('data-distance', Math.round(distance));
+        const distanceLabel = arrow.querySelector('.compass-distance');
+        if (distanceLabel) {
+            distanceLabel.textContent = Math.round(distance) + 'm';
+        }
 
-        // Only update rotation - position is fixed via CSS next to UI
-        arrow.style.transform = `rotate(${angle}deg)`;
+        // Rotate the needle element
+        const needle = arrow.querySelector('.compass-needle');
+        if (needle) {
+            needle.style.transform = `rotate(${angle}deg)`;
+        }
+
         arrow.classList.add('show');
     }
 
@@ -849,8 +872,6 @@ export class Game {
                 warning.classList.add(edgeClass);
                 warning.style.left = warningX + 'px';
                 warning.style.top = warningY + 'px';
-                warning.style.width = isMobile ? '50px' : '60px';
-                warning.style.height = isMobile ? '50px' : '60px';
 
                 warningsContainer.appendChild(warning);
             });
