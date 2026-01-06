@@ -385,8 +385,45 @@ export class Game {
     }
 
     createGround() {
-        // Remove ground - infinite space feel
-        // No ground plane needed
+        // Create sector grid with alternating shades
+        const sectorSize = this.trackData.sectorSize;
+        const sectorsPerSide = this.trackData.sectorsPerSide;
+        const halfTrack = this.trackData.trackSize / 2;
+
+        for (let x = 0; x < sectorsPerSide; x++) {
+            for (let z = 0; z < sectorsPerSide; z++) {
+                // Alternating pattern for visual distinction
+                const isEven = (x + z) % 2 === 0;
+                const color = isEven ? 0x000033 : 0x000022;
+
+                const planeGeometry = new THREE.PlaneGeometry(sectorSize, sectorSize);
+                const planeMaterial = new THREE.MeshBasicMaterial({
+                    color: color,
+                    transparent: true,
+                    opacity: 0.3,
+                    side: THREE.DoubleSide
+                });
+                const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+
+                // Position plane
+                plane.position.x = -halfTrack + (x * sectorSize) + (sectorSize / 2);
+                plane.position.z = -halfTrack + (z * sectorSize) + (sectorSize / 2);
+                plane.position.y = -1;
+                plane.rotation.x = -Math.PI / 2;
+
+                this.scene.add(plane);
+            }
+        }
+
+        // Add sector grid lines
+        const gridHelper = new THREE.GridHelper(
+            this.trackData.trackSize,
+            sectorsPerSide,
+            0x0066ff,
+            0x003366
+        );
+        gridHelper.position.y = -0.5;
+        this.scene.add(gridHelper);
 
         // Add stars background - distributed across the entire play area
         const starsGeometry = new THREE.BufferGeometry();

@@ -122,12 +122,18 @@ export class TrackGenerator {
             });
         }
 
+        // Calculate sectors - divide track into a grid
+        const sectorSize = 200; // Each sector is 200 units
+        const sectorsPerSide = Math.ceil(trackSize / sectorSize);
+
         return {
             asteroidCount,
             asteroids,
             startPoint,
             endPoint,
-            trackSize
+            trackSize,
+            sectorSize,
+            sectorsPerSide
         };
     }
 }
