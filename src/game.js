@@ -21,6 +21,9 @@ export class Game {
         this.isCountdown = false;
         this.countdownStartTime = null;
         this.countdownDuration = 3000; // 3 seconds countdown
+        this.currentSector = null;
+        this.sectors = [];
+        this.crashInfo = null; // Store crash information
 
         // Physics properties
         this.shipVelocity = new THREE.Vector3(0, 0, 0);
@@ -391,47 +394,165 @@ export class Game {
         this.scene.add(endMarker);
     }
 
+    getSectorName(index) {
+        // Generate sector names: A, B, C, ..., Z, AA, AB, AC, ...
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let name = '';
+        let num = index;
+
+        do {
+            name = letters[num % 26] + name;
+            num = Math.floor(num / 26) - 1;
+        } while (num >= 0);
+
+        return name;
+    }
+
+    createHexagon(radius, color, opacity, wireframe = false) {
+        const shape = new THREE.Shape();
+        for (let i = 0; i < 6; i++) {
+            const angle = (i / 6) * Math.PI * 2;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            if (i === 0) shape.moveTo(x, y);
+            else shape.lineTo(x, y);
+        }
+        shape.lineTo(Math.cos(0) * radius, Math.sin(0) * radius);
+
+        if (wireframe) {
+            const points = [];
+            for (let i = 0; i <= 6; i++) {
+                const angle = (i / 6) * Math.PI * 2;
+                points.push(new THREE.Vector3(
+                    Math.cos(angle) * radius,
+                    0,
+                    Math.sin(angle) * radius
+                ));
+            }
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const material = new THREE.LineBasicMaterial({
+                color: color,
+                transparent: true,
+                opacity: opacity
+            });
+            return new THREE.Line(geometry, material);
+        } else {
+            const geometry = new THREE.ShapeGeometry(shape);
+            const material = new THREE.MeshBasicMaterial({
+                color: color,
+                transparent: true,
+                opacity: opacity,
+                side: THREE.DoubleSide
+            });
+            return new THREE.Mesh(geometry, material);
+        }
+    }
+
     createGround() {
-        // Create sector grid with alternating shades
-        const sectorSize = this.trackData.sectorSize;
-        const sectorsPerSide = this.trackData.sectorsPerSide;
-        const halfTrack = this.trackData.trackSize / 2;
+        // Create hexagonal sector grid
+        const hexRadius = 50; // Radius of each hexagon
+        const trackSize = this.trackData.trackSize;
+        const hexWidth = hexRadius * Math.sqrt(3);
+        const hexHeight = hexRadius * 2;
 
-        for (let x = 0; x < sectorsPerSide; x++) {
-            for (let z = 0; z < sectorsPerSide; z++) {
-                // Alternating pattern for visual distinction
-                const isEven = (x + z) % 2 === 0;
-                const color = isEven ? 0x000033 : 0x000022;
+        // Calculate how many hexagons we need
+        const hexesX = Math.ceil(trackSize / hexWidth) + 2;
+        const hexesZ = Math.ceil(trackSize / (hexHeight * 0.75)) + 2;
+        const halfTrack = trackSize / 2;
 
-                const planeGeometry = new THREE.PlaneGeometry(sectorSize, sectorSize);
-                const planeMaterial = new THREE.MeshBasicMaterial({
-                    color: color,
-                    transparent: true,
-                    opacity: 0.3,
-                    side: THREE.DoubleSide
+        let sectorIndex = 0;
+        this.sectors = [];
+
+        for (let row = -Math.floor(hexesZ / 2); row < hexesZ; row++) {
+            for (let col = -Math.floor(hexesX / 2); col < hexesX; col++) {
+                const offsetX = row % 2 === 0 ? 0 : hexWidth / 2;
+                const x = col * hexWidth + offsetX;
+                const z = row * hexHeight * 0.75;
+
+                // Skip hexagons too far from track bounds
+                if (Math.abs(x) > halfTrack + hexRadius || Math.abs(z) > halfTrack + hexRadius) {
+                    continue;
+                }
+
+                // Alternating colors for visual distinction
+                const isEven = (row + col) % 2 === 0;
+                const color = isEven ? 0x001a33 : 0x000d1a;
+
+                // Create hexagon floor
+                const hexFloor = this.createHexagon(hexRadius * 0.95, color, 0.4);
+                hexFloor.position.set(x, -1, z);
+                hexFloor.rotation.x = -Math.PI / 2;
+                this.scene.add(hexFloor);
+
+                // Create hexagon border
+                const hexBorder = this.createHexagon(hexRadius, 0x003366, 0.6, true);
+                hexBorder.position.set(x, -0.5, z);
+                this.scene.add(hexBorder);
+
+                // Store sector info
+                const sectorName = this.getSectorName(sectorIndex);
+                this.sectors.push({
+                    name: sectorName,
+                    x: x,
+                    z: z,
+                    radius: hexRadius
                 });
-                const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 
-                // Position plane
-                plane.position.x = -halfTrack + (x * sectorSize) + (sectorSize / 2);
-                plane.position.z = -halfTrack + (z * sectorSize) + (sectorSize / 2);
-                plane.position.y = -1;
-                plane.rotation.x = -Math.PI / 2;
-
-                this.scene.add(plane);
+                sectorIndex++;
             }
         }
 
-        // Add sector grid lines
-        const gridHelper = new THREE.GridHelper(
-            this.trackData.trackSize,
-            sectorsPerSide,
-            0x0066ff,
-            0x003366
-        );
-        gridHelper.position.y = -0.5;
-        this.scene.add(gridHelper);
+        // Create sector gates at major boundaries
+        this.createSectorGates();
 
+        // Add stars
+        this.addStars();
+    }
+
+    createSectorGates() {
+        // Create holographic ring gates at strategic intervals
+        const trackSize = this.trackData.trackSize;
+        const gateCount = 6; // Number of gates across the track
+        const gateSpacing = trackSize / (gateCount + 1);
+        const halfTrack = trackSize / 2;
+
+        for (let i = 1; i <= gateCount; i++) {
+            const z = -halfTrack + (i * gateSpacing);
+
+            // Create ring gate
+            const gateRadius = 30;
+            const gateGeometry = new THREE.TorusGeometry(gateRadius, 1.5, 8, 32);
+            const gateMaterial = new THREE.MeshBasicMaterial({
+                color: 0x00ffaa,
+                transparent: true,
+                opacity: 0.6,
+                emissive: 0x00ffaa,
+                emissiveIntensity: 0.5
+            });
+            const gate = new THREE.Mesh(gateGeometry, gateMaterial);
+            gate.position.set(0, 15, z);
+            gate.rotation.x = Math.PI / 2;
+            this.scene.add(gate);
+
+            // Add vertical energy beams on sides
+            const beamGeometry = new THREE.CylinderGeometry(0.5, 0.5, 30, 8);
+            const beamMaterial = new THREE.MeshBasicMaterial({
+                color: 0x00ffaa,
+                transparent: true,
+                opacity: 0.4,
+                emissive: 0x00ffaa,
+                emissiveIntensity: 0.8
+            });
+
+            [-gateRadius - 10, gateRadius + 10].forEach(xPos => {
+                const beam = new THREE.Mesh(beamGeometry, beamMaterial);
+                beam.position.set(xPos, 15, z);
+                this.scene.add(beam);
+            });
+        }
+    }
+
+    addStars() {
         // Add stars background - distributed across the entire play area
         const starsGeometry = new THREE.BufferGeometry();
         const starsCount = 5000; // More stars for larger area
@@ -481,6 +602,14 @@ export class Game {
             this.camera.updateProjectionMatrix();
             this.renderer.setSize(window.innerWidth, window.innerHeight);
         });
+
+        // Crash screen reset button
+        const crashResetBtn = document.getElementById('crash-reset-btn');
+        if (crashResetBtn) {
+            crashResetBtn.addEventListener('click', () => {
+                this.resetRace();
+            });
+        }
     }
 
     startCountdown() {
@@ -676,12 +805,26 @@ export class Game {
         this.isRunning = false;
         this.isFinished = true;
 
-        // Update instruction based on platform
-        const isMobile = window.innerWidth <= 768;
-        const crashInstruction = document.querySelector('#crash-screen .screen-instruction');
-        if (crashInstruction) {
-            crashInstruction.textContent = isMobile ? 'Tap RESET to try again' : 'Press ESC to try again';
-        }
+        // Capture crash information
+        const elapsed = this.startTime ? ((Date.now() - this.startTime) / 1000).toFixed(2) : '0.00';
+        const endPoint = this.trackData?.endPoint;
+        const distance = endPoint && this.ship ?
+            this.ship.position.distanceTo(new THREE.Vector3(endPoint.x, endPoint.y, endPoint.z)) : 0;
+
+        this.crashInfo = {
+            sector: this.currentSector ? this.currentSector.name : 'Unknown',
+            time: elapsed,
+            distanceToFinish: Math.round(distance)
+        };
+
+        // Update crash screen with info
+        const crashSector = document.getElementById('crash-sector');
+        const crashTime = document.getElementById('crash-time');
+        const crashDistance = document.getElementById('crash-distance');
+
+        if (crashSector) crashSector.textContent = this.crashInfo.sector;
+        if (crashTime) crashTime.textContent = `${this.crashInfo.time}s`;
+        if (crashDistance) crashDistance.textContent = `${this.crashInfo.distanceToFinish}m`;
 
         document.getElementById('crash-screen').classList.add('show');
         document.getElementById('status').textContent = 'Crashed!';
@@ -722,10 +865,34 @@ export class Game {
         this.leaderboardUI.resetScoreSubmission();
     }
 
+    getCurrentSector() {
+        if (!this.ship || this.sectors.length === 0) return null;
+
+        const shipPos = this.ship.position;
+        let closestSector = null;
+        let minDistance = Infinity;
+
+        for (const sector of this.sectors) {
+            const dx = shipPos.x - sector.x;
+            const dz = shipPos.z - sector.z;
+            const distance = Math.sqrt(dx * dx + dz * dz);
+
+            if (distance < sector.radius && distance < minDistance) {
+                minDistance = distance;
+                closestSector = sector;
+            }
+        }
+
+        return closestSector;
+    }
+
     updateUI() {
         if (this.isRunning && this.startTime) {
             const elapsed = ((Date.now() - this.startTime) / 1000).toFixed(2);
             document.getElementById('time').textContent = elapsed;
+
+            // Track current sector
+            this.currentSector = this.getCurrentSector();
         }
 
         // Update destination arrow
