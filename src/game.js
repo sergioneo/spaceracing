@@ -762,8 +762,8 @@ export class Game {
         direction.normalize();
 
         // Calculate angle for arrow rotation (in degrees)
-        // atan2(x, z) gives angle from Z-axis, add 180° to align with CSS rotation
-        const angle = Math.atan2(direction.x, direction.z) * 180 / Math.PI + 180;
+        // Negate x to flip horizontally, atan2 gives angle from Z-axis
+        const angle = Math.atan2(-direction.x, direction.z) * 180 / Math.PI + 180;
 
         // Update distance display (convert to whole number)
         const distanceLabel = arrow.querySelector('.compass-distance');
